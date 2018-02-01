@@ -54,7 +54,7 @@ public class ForcedLayout implements Layout {
     }
 
     public ForcedLayout(BorderPane container, Graph<? extends Cell> graph, int width, int height) {
-        this(container, graph, width, height, graph.getCells().size() * 2);
+        this(container, graph, width, height, graph.getCells().size());
     }
 
     public ForcedLayout(BorderPane container, Graph<? extends Cell> graph, int width, int height, double attractionCoefficient) {
