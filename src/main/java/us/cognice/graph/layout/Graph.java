@@ -36,6 +36,7 @@ public class Graph<T extends Cell> {
             Edge<T> edge = new Edge<>(source, target);
             edges.add(edge);
             canvas.getChildren().add(edge);
+            edge.toBack();
         }
     }
 
