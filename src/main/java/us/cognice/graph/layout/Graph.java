@@ -90,4 +90,8 @@ public class Graph<T extends Cell> {
     public double getScale() {
         return canvas.getScale();
     }
+
+    public ZoomPane getCanvas() {
+        return canvas;
+    }
 }
