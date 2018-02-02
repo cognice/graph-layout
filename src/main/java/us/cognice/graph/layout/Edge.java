@@ -14,6 +14,7 @@ public class Edge<T extends Cell> extends Line {
         this.source = source;
         this.target = target;
         setStrokeWidth(0.2);
+        setOpacity(0.5);
         startXProperty().bind(source.layoutXProperty().add(source.getBoundsInParent().getMinX() + source.getCenterOffset().getX()));
         startYProperty().bind(source.layoutYProperty().add(source.getBoundsInParent().getMinY() + source.getCenterOffset().getY()));
         endXProperty().bind(target.layoutXProperty().add(target.getBoundsInParent().getMinX() + target.getCenterOffset().getX()));
