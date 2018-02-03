@@ -18,11 +18,18 @@ public class ForcedLayout implements Layout {
     private final DragContext dragContext = new DragContext();
 
     private class LayoutStep extends AnimationTimer {
+        private long timeout = 7000;
+        private long start = 0;
         private double temperature;
         private double energy = Double.MAX_VALUE;
         private int progress = 0;
         LayoutStep(double temperature) {
             this.temperature = temperature;
+        }
+        @Override
+        public void start() {
+            super.start();
+            start = System.nanoTime();
         }
         @Override
         public void handle(long now) {
@@ -44,7 +51,7 @@ public class ForcedLayout implements Layout {
                 progress = 0;
                 temperature *= 0.9;
             }
-            if (temperature <= 0.01) this.stop();
+            if (temperature <= 0.01 || now - start > timeout * 1000000) this.stop();
         }
     }
 
