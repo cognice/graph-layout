@@ -28,6 +28,11 @@ public class Coordinates {
         this.y = y;
     }
 
+    public void set(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public Coordinates add(Coordinates point){
         x += point.x;
         y += point.y;

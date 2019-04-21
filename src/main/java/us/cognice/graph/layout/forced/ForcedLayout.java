@@ -1,21 +1,23 @@
-package us.cognice.graph.layout;
+package us.cognice.graph.layout.forced;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.Cursor;
 import javafx.scene.layout.BorderPane;
+import us.cognice.graph.layout.Cell;
+import us.cognice.graph.layout.Coordinates;
+import us.cognice.graph.layout.Edge;
+import us.cognice.graph.layout.Graph;
 
 import java.util.Random;
 
 /**
  * Created by Kirill Simonov on 14.06.2017.
  */
-public class ForcedLayout implements Layout {
+public class ForcedLayout extends DraggableScrollableLayout {
 
-    private final BorderPane container;
-    private final Graph<? extends Cell> graph;
     private final int width, height;
     private final double attractionCoefficient, k;
-    private final DragContext dragContext = new DragContext();
+
+    private LayoutStep loop;
 
     private class LayoutStep extends AnimationTimer {
         private long timeout = 7000;
@@ -33,10 +35,10 @@ public class ForcedLayout implements Layout {
         }
         @Override
         public void handle(long now) {
-            step(temperature);
+            step();
             double previousEnergy = energy;
             energy = 0;
-            for (Cell c: graph.getCells().values()) {
+            for (ForcedLayoutNode c: graph.getCells().values()) {
                 energy += c.getDisplacement().length();
                 c.getPosition().add(c.getDisplacement().unit().scale(temperature));
                 c.relocate();
@@ -55,19 +57,13 @@ public class ForcedLayout implements Layout {
         }
     }
 
-    private class DragContext {
-        double x;
-        double y;
-    }
-
-    public ForcedLayout(BorderPane container, Graph<? extends Cell> graph, int width, int height) {
+    public ForcedLayout(BorderPane container, Graph<? extends ForcedLayoutNode> graph, int width, int height) {
         this(container, graph, width, height, graph.getCells().size());
     }
 
-    public ForcedLayout(BorderPane container, Graph<? extends Cell> graph, int width, int height, double attractionCoefficient) {
-        this.container = container;
-        this.graph = graph;
-        this.graph.canvas.setManaged(false);
+    public ForcedLayout(BorderPane container, Graph<? extends ForcedLayoutNode> graph, int width, int height, double attractionCoefficient) {
+        super(container, graph);
+        this.graph.getCanvas().setManaged(false);
         this.width = width;
         this.height = height;
         this.attractionCoefficient = attractionCoefficient;
@@ -75,7 +71,7 @@ public class ForcedLayout implements Layout {
     }
 
     @Override
-    public void calculate() {
+    public void start() {
         if (!graph.isLocated()) {
             Random rnd = new Random();
             for (Cell c : graph.getCells().values()) {
@@ -87,22 +83,29 @@ public class ForcedLayout implements Layout {
             }
             graph.setLocated(true);
         }
-        container.setCenter(graph.canvas);
+        container.setCenter(graph.getCanvas());
         applyDragAndScroll();
-        LayoutStep loop = new LayoutStep(width / 10);
+        loop = new LayoutStep(width / 10);
         loop.start();
     }
 
     @Override
-    public void recalculate() {
-        LayoutStep loop = new LayoutStep(5);
+    public void restart() {
+        loop = new LayoutStep(5);
         loop.start();
+    }
+
+    @Override
+    public void stop() {
+        if (loop != null) {
+            loop.stop();
+        }
     }
 
 
     @Override
-    public void step(double temperature) {
-        for (Cell v: graph.getCells().values()) {
+    public void step() {
+        for (ForcedLayoutNode v: graph.getCells().values()) {
             v.resetDisplacement();
             for (Cell u: graph.getCells().values()) {
                 if (!u.equals(v)) {
@@ -110,8 +113,8 @@ public class ForcedLayout implements Layout {
                 }
             }
         }
-        for (Edge e: graph.getEdges()) {
-            Cell v = e.source, u = e.target;
+        for (Edge<? extends ForcedLayoutNode> e: graph.getEdges()) {
+            ForcedLayoutNode v = e.getSource(), u = e.getTarget();
             Coordinates delta = v.delta(u).unit().scale(fa(u, v));
             v.getDisplacement().subtract(delta);
             u.getDisplacement().add(delta);
@@ -120,7 +123,7 @@ public class ForcedLayout implements Layout {
 
     @Override
     public <T extends Cell> void dragStep(T cell, double displacement) {
-        for (Cell v: graph.getCells().values()) {
+        for (ForcedLayoutNode v: graph.getCells().values()) {
             if (v != cell) {
                 v.resetDisplacement();
                 for (Cell u: graph.getCells().values()) {
@@ -130,36 +133,18 @@ public class ForcedLayout implements Layout {
                 }
             }
         }
-        for (Edge e: graph.getEdges()) {
-            Cell v = e.source, u = e.target;
+        for (Edge<? extends ForcedLayoutNode> e: graph.getEdges()) {
+            ForcedLayoutNode v = e.getSource(), u = e.getTarget();
             Coordinates delta = v.delta(u).unit().scale(fa(u, v));
             if (v != cell) v.getDisplacement().subtract(delta);
             if (u != cell) u.getDisplacement().add(delta);
         }
-        for (Cell c: graph.getCells().values()) {
+        for (ForcedLayoutNode c: graph.getCells().values()) {
             if (c != cell) {
                 c.getPosition().add(c.getDisplacement().unit().scale(displacement));
                 c.relocate();
             }
         }
-    }
-
-    private void applyDragAndScroll() {
-        container.setOnMousePressed(event -> {
-            dragContext.x = event.getScreenX();
-            dragContext.y = event.getScreenY();
-        });
-        container.setOnMouseDragged(event -> {
-            this.container.setCursor(Cursor.CLOSED_HAND);
-            double offsetX = dragContext.x - event.getScreenX();
-            double offsetY = dragContext.y - event.getScreenY();
-            dragContext.x = event.getScreenX();
-            dragContext.y = event.getScreenY();
-            graph.canvas.relocate(graph.canvas.getLayoutX() - offsetX , graph.canvas.getLayoutY() - offsetY);
-            event.consume();
-        });
-        container.setOnScroll(event -> graph.canvas.zoom(event));
-        container.setOnMouseReleased(event -> this.container.setCursor(Cursor.DEFAULT));
     }
 
     private double fa(Cell u, Cell v) {

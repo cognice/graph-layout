@@ -33,11 +33,15 @@ public class Graph<T extends Cell> {
         T source = cells.get(from);
         T target = cells.get(to);
         if (source != null && target != null) {
-            Edge<T> edge = new Edge<>(source, target);
-            edges.add(edge);
-            canvas.getChildren().add(edge);
-            edge.toBack();
+            addEdge(source, target);
         }
+    }
+
+    public void addEdge(T from, T to) {
+        Edge<T> edge = new Edge<>(from, to);
+        edges.add(edge);
+        canvas.getChildren().add(edge);
+        edge.toBack();
     }
 
     public boolean removeCell(String id) {
@@ -69,6 +73,16 @@ public class Graph<T extends Cell> {
         };
         edges.removeIf(p);
         return canvas.getChildren().removeIf(p);
+    }
+
+    public boolean areCellsConnected(T a, T b) {
+        for (Edge<T> e : edges) {
+            if (e.source.equals(a) && e.target.equals(b)
+                    || e.source.equals(b) && e.target.equals(a)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Map<String, T> getCells() {

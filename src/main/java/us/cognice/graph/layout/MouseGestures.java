@@ -90,7 +90,7 @@ public class MouseGestures {
             e.setStroke(Color.BLACK);
             e.setStrokeWidth(0.2);
         });
-        layout.recalculate();
+        layout.restart();
         dragContext.neighbors.clear();
     };
 }

@@ -35,7 +35,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>us.cognice.graph.layout.SampleApplication</mainClass>
+                            <mainClass>us.cognice.graph.layout.forced.SampleApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
