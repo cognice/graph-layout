@@ -6,7 +6,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import us.cognice.graph.layout.Graph;
 import us.cognice.graph.layout.Layout;
-import us.cognice.graph.layout.MouseGestures;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class SampleApplication extends Application {
         }
         primaryStage.setScene(scene);
         Graph<ForcedLayoutNode> graph = buildGraph();
-        Layout layout = new ForcedLayout(root, graph, WIDTH, HEIGHT);
+        ForcedLayout layout = new ForcedLayout(root, graph, WIDTH, HEIGHT);
         MouseGestures mouseGestures = new MouseGestures(graph, layout);
         graph.getCells().values().forEach(mouseGestures::apply);
         layout.start();

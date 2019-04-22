@@ -16,7 +16,6 @@ public class Graph<T extends Cell> {
     protected ZoomPane canvas;
     private Map<String, T> cells;
     private List<Edge<T>> edges;
-    private boolean located = false;
 
     public Graph() {
         cells = new HashMap<>();
@@ -91,14 +90,6 @@ public class Graph<T extends Cell> {
 
     public List<Edge<T>> getEdges() {
         return edges;
-    }
-
-    public boolean isLocated() {
-        return located;
-    }
-
-    public void setLocated(boolean located) {
-        this.located = located;
     }
 
     public double getScale() {

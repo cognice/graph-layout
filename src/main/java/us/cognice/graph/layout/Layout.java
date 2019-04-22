@@ -8,5 +8,4 @@ public interface Layout {
     void restart();
     void stop();
     void step();
-    <T extends Cell> void dragStep(T cell, double displacement);
 }

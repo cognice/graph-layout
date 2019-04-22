@@ -15,10 +15,10 @@ public class Edge<T extends Cell> extends Line {
         this.target = target;
         setStrokeWidth(0.2);
         setOpacity(0.5);
-        startXProperty().bind(source.layoutXProperty().add(source.getBoundsInParent().getMinX() + source.getCenterOffset().getX()));
-        startYProperty().bind(source.layoutYProperty().add(source.getBoundsInParent().getMinY() + source.getCenterOffset().getY()));
-        endXProperty().bind(target.layoutXProperty().add(target.getBoundsInParent().getMinX() + target.getCenterOffset().getX()));
-        endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getMinX() + target.getCenterOffset().getY()));
+        startXProperty().bind(source.positionXProperty());
+        startYProperty().bind(source.positionYProperty());
+        endXProperty().bind(target.positionXProperty());
+        endYProperty().bind(target.positionYProperty());
     }
 
     public T getSource() {

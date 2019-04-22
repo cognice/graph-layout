@@ -1,14 +1,15 @@
 package us.cognice.graph.layout.forced;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import us.cognice.graph.layout.Cell;
-import us.cognice.graph.layout.Coordinates;
+import us.cognice.graph.layout.Vector;
 
 public class ForcedLayoutNode extends Cell {
 
-    private Coordinates displacement = new Coordinates(0, 0);
-    private Coordinates position;
+    private Vector displacement = new Vector(0, 0);
+    private Vector position;
 
     public ForcedLayoutNode(String id, String name) {
         super(id, name);
@@ -26,7 +27,7 @@ public class ForcedLayoutNode extends Cell {
         super(id, name, radius, image);
     }
 
-    public Coordinates getDisplacement() {
+    public Vector getDisplacement() {
         return displacement;
     }
 
@@ -35,14 +36,22 @@ public class ForcedLayoutNode extends Cell {
         displacement.setY(0);
     }
 
-    public Coordinates getPosition() {
+    public Vector getPosition() {
         if (position == null) {
-            position = new Coordinates(getLayoutX(), getLayoutY());
+            position = new Vector(getLayoutX(), getLayoutY());
         }
         return position;
     }
 
     public void relocate() {
         super.relocate(position.getX(), position.getY());
+    }
+
+    public DoubleBinding positionXProperty() {
+        return layoutXProperty().add(getBoundsInParent().getMinX() + getCenterOffset().getX());
+    }
+
+    public DoubleBinding positionYProperty() {
+        return layoutYProperty().add(getBoundsInParent().getMinY() + getCenterOffset().getY());
     }
 }

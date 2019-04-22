@@ -1,10 +1,13 @@
-package us.cognice.graph.layout;
+package us.cognice.graph.layout.forced;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import us.cognice.graph.layout.Cell;
+import us.cognice.graph.layout.Edge;
+import us.cognice.graph.layout.Graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ public class MouseGestures {
 
     private final DragContext dragContext = new DragContext();
     private Graph<? extends Cell> graph;
-    private Layout layout;
+    private ForcedLayout layout;
 
     private DragStep loop = new DragStep();
 
@@ -42,7 +45,7 @@ public class MouseGestures {
         }
     }
 
-    public MouseGestures(Graph<? extends Cell> graph, Layout layout) {
+    public MouseGestures(Graph<? extends Cell> graph, ForcedLayout layout) {
         this.graph = graph;
         this.layout = layout;
     }
@@ -62,7 +65,7 @@ public class MouseGestures {
         double scale = graph.getScale();
         dragContext.x = cell.getBoundsInParent().getMinX() * scale - event.getScreenX();
         dragContext.y = cell.getBoundsInParent().getMinY() * scale - event.getScreenY();
-        graph.getEdges().stream().filter(e -> e.target.equals(cell) || e.source.equals(cell)).forEach(e -> {
+        graph.getEdges().stream().filter(e -> e.getTarget().equals(cell) || e.getSource().equals(cell)).forEach(e -> {
             e.setStroke(Color.ORANGERED);
             e.setStrokeWidth(0.7);
             dragContext.neighbors.add(e);

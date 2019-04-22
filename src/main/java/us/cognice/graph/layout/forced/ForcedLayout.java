@@ -3,7 +3,7 @@ package us.cognice.graph.layout.forced;
 import javafx.animation.AnimationTimer;
 import javafx.scene.layout.BorderPane;
 import us.cognice.graph.layout.Cell;
-import us.cognice.graph.layout.Coordinates;
+import us.cognice.graph.layout.Vector;
 import us.cognice.graph.layout.Edge;
 import us.cognice.graph.layout.Graph;
 
@@ -18,6 +18,7 @@ public class ForcedLayout extends DraggableScrollableLayout {
     private final double attractionCoefficient, k;
 
     private LayoutStep loop;
+    private boolean located;
 
     private class LayoutStep extends AnimationTimer {
         private long timeout = 7000;
@@ -72,16 +73,16 @@ public class ForcedLayout extends DraggableScrollableLayout {
 
     @Override
     public void start() {
-        if (!graph.isLocated()) {
+        if (!located) {
             Random rnd = new Random();
             for (Cell c : graph.getCells().values()) {
-                Coordinates offset = c.getCenterOffset();
+                Vector offset = c.getCenterOffset();
                 double x = rnd.nextDouble() * (width - 2 * offset.getX());
                 double y = rnd.nextDouble() * (height - 2 * offset.getY());
                 c.getPosition().setX(x);
                 c.getPosition().setY(y);
             }
-            graph.setLocated(true);
+            located = true;
         }
         container.setCenter(graph.getCanvas());
         applyDragAndScroll();
@@ -102,7 +103,6 @@ public class ForcedLayout extends DraggableScrollableLayout {
         }
     }
 
-
     @Override
     public void step() {
         for (ForcedLayoutNode v: graph.getCells().values()) {
@@ -115,13 +115,12 @@ public class ForcedLayout extends DraggableScrollableLayout {
         }
         for (Edge<? extends ForcedLayoutNode> e: graph.getEdges()) {
             ForcedLayoutNode v = e.getSource(), u = e.getTarget();
-            Coordinates delta = v.delta(u).unit().scale(fa(u, v));
+            Vector delta = v.delta(u).unit().scale(fa(u, v));
             v.getDisplacement().subtract(delta);
             u.getDisplacement().add(delta);
         }
     }
 
-    @Override
     public <T extends Cell> void dragStep(T cell, double displacement) {
         for (ForcedLayoutNode v: graph.getCells().values()) {
             if (v != cell) {
@@ -135,7 +134,7 @@ public class ForcedLayout extends DraggableScrollableLayout {
         }
         for (Edge<? extends ForcedLayoutNode> e: graph.getEdges()) {
             ForcedLayoutNode v = e.getSource(), u = e.getTarget();
-            Coordinates delta = v.delta(u).unit().scale(fa(u, v));
+            Vector delta = v.delta(u).unit().scale(fa(u, v));
             if (v != cell) v.getDisplacement().subtract(delta);
             if (u != cell) u.getDisplacement().add(delta);
         }

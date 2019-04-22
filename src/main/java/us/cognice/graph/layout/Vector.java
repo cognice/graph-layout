@@ -3,11 +3,11 @@ package us.cognice.graph.layout;
 /**
  * Created by Kirill Simonov on 14.06.2017.
  */
-public class Coordinates {
+public class Vector {
 
     private double x, y;
 
-    public Coordinates(double x, double y) {
+    public Vector(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -33,19 +33,19 @@ public class Coordinates {
         this.y = y;
     }
 
-    public Coordinates add(Coordinates point){
+    public Vector add(Vector point){
         x += point.x;
         y += point.y;
         return this;
     }
 
-    public Coordinates subtract(Coordinates point) {
+    public Vector subtract(Vector point) {
         x -= point.x;
         y -= point.y;
         return this;
     }
 
-    public Coordinates unit() {
+    public Vector unit() {
         if (x == 0 && y == 0) {
             x = 0.00001;
             y = 0.00001;
@@ -57,10 +57,15 @@ public class Coordinates {
         return this;
     }
 
-    public Coordinates scale(double k) {
+    public Vector scale(double k) {
         x *= k;
         y *= k;
         return this;
+    }
+
+    public Vector limit(double max) {
+        double l = length();
+        return l < max ? this : unit().scale(max);
     }
 
     public double length() {

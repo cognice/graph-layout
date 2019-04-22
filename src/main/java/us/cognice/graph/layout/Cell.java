@@ -1,5 +1,6 @@
 package us.cognice.graph.layout;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -43,20 +44,27 @@ public class Cell extends Circle {
         return name;
     }
 
-    public Coordinates getCenterOffset() {
-        return new Coordinates(getRadius(), getRadius());
+    public Vector getCenterOffset() {
+        return new Vector(getRadius(), getRadius());
     }
 
-    public Coordinates getPosition() {
-        return new Coordinates(getCenterX(), getCenterY());
+    public Vector getPosition() {
+        return new Vector(getCenterX(), getCenterY());
     }
 
     public double distance(Cell cell) {
         return Math.sqrt(Math.pow(getPosition().getX() - cell.getPosition().getX(), 2) + Math.pow(getPosition().getY() - cell.getPosition().getY(), 2));
     }
 
-    public Coordinates delta(Cell cell) {
-        return new Coordinates(getPosition().getX() - cell.getPosition().getX(), getPosition().getY() - cell.getPosition().getY());
+    public Vector delta(Cell cell) {
+        return new Vector(getPosition().getX() - cell.getPosition().getX(), getPosition().getY() - cell.getPosition().getY());
     }
 
+    public ObservableValue<Number> positionXProperty() {
+        return centerXProperty();
+    }
+
+    public ObservableValue<Number> positionYProperty() {
+        return centerYProperty();
+    }
 }
